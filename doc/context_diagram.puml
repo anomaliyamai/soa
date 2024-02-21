@@ -1,0 +1,13 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/latest/C4_Context.puml
+
+Person(user, "Пользователь", "Пользователь трекера задач.")
+System(taskTrackerSystem, "Трекер задач", "Сервис, позволяющий управлять задачами и их состоянием.")
+
+System_Ext(statisticsService, "Сервис статистики", "Используется для подсчета лайков и просмотров по задаче.")
+System_Ext(commentService, "Сервис задач и комментариев", "Управляет задачами и комментариями, а также их состоянием.")
+
+Rel(user, taskTrackerSystem, "Обращается")
+Rel(taskTrackerSystem, statisticsService, "Запрашивает статистику")
+Rel(taskTrackerSystem, commentService, "Оперирует состоянием задач и комментариев")
+@enduml

@@ -1,0 +1,52 @@
+@startuml er diagram
+
+
+class commentary as "Commentary" << (T,violet) >> {
+    *id : int <<PK>>
+    --
+    +task_id : int <<FK>>
+    +parent_id : int <<FK>>
+    +user_id : int <<FK>>
+    +text : text
+}
+
+class user as "User" << (T,orange) >> {
+    *id : int <<PK>>
+    --
+    +password : text
+    +username : text
+    +email : text
+}
+
+class task as "Task" << (T,yellow) >> {
+    *id : int <<PK>>
+    --
+    +user_id : int <<FK>>
+    +title : varchar
+    +status : varchar
+    +description : text
+}
+
+class like as "Like" << (T,green) >> {
+    *id : int <<PK>>
+    --
+    +user_id : int <<FK>>
+    +task_id : int <<FK>>
+}
+
+class statistics as "Statistics" << (T,brown) >> {
+    *id : int <<PK>>
+    --
+    +task_id : int <<FK>>
+    +views : int
+    +likes : int
+}
+
+user --|{ task : "fk"
+task --|{ like : "fk"
+user --|{ like : "fk"
+task --|{ commentary : "fk"
+task --|{ statistics : "fk"
+user --|{ commentary : "fk"
+
+@enduml

@@ -1,0 +1,30 @@
+@startuml
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/latest/C4_Container.puml
+!define ICONURL https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/v2.4.0
+!include ICONURL/devicons/postgresql.puml
+!include ICONURL/devicons/mongodb.puml
+!include ICONURL/devicons2/go.puml
+
+!include <cloudinsight/kafka>
+
+LAYOUT_WITH_LEGEND()
+
+Person(user, "Пользователь", "Пользователь трекера задач.")
+Container(taskTrackerApi, "API Трекера задач", "REST api", "Предоставляет эндпойнты для работы над задачами, комментариями, просмотрами и лайками.", go)
+ContainerDb(userDatabase, "База данных пользователей", "postgresql", "Хранит данные о пользователях, в том числе для авторизации.", "postgresql")
+Container(statisticsService, "Сервис статистики", "gRPC", "Используется для подсчета лайков и просмотров по задаче.", go)
+ContainerDb(statisticsDatabase, "База данных статистики", "ClickHouse", "Хранит статистические данные о просмотрах и лайках.")
+Container(commentService, "Сервис задач и комментариев", "gRPC", "Управляет задачами и комментариями, а также их состоянием.", go)
+ContainerDb(commentDatabase, "База данных задач и комментариев", "MongoDB", "Хранит задачи и комментарии.", "mongodb")
+Container(broker, "Брокер сообщений", "Kafka", "Работает с событиями просмотров и лайков.", "kafka")
+
+Rel(user, taskTrackerApi, "Обращается", "HTTPS")
+Rel(taskTrackerApi, userDatabase, "Чтение/запись")
+Rel(taskTrackerApi, statisticsService, "Вызывает", "gRPC")
+Rel(taskTrackerApi, commentService, "Вызывает", "gRPC")
+Rel(taskTrackerApi, broker, "Пишет сообщения")
+Rel(broker, statisticsService, "Отдает информацию о событиях")
+Rel(statisticsService, statisticsDatabase, "Чтение/запись")
+Rel(commentService, commentDatabase, "Чтение/запись")
+@enduml
